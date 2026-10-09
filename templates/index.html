@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Turn your ambitions into a practical, personalized AI roadmap.">
+  <title>RoadmapAI — Turn goals into progress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="RoadmapAI home">
+      <span class="brand-mark">R<span>↗</span></span>
+      <span>roadmap<span class="brand-ai">AI</span></span>
+    </a>
+    <div class="topbar-right">
+      <span class="status-dot"></span>
+      <span class="status-label">{{ "AI connected" if ai_configured else "API key needed" }}</span>
+      <a class="github-link" href="https://github.com/" target="_blank" rel="noreferrer">GitHub ↗</a>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero">
+      <div class="eyebrow"><span class="sparkle">✦</span> YOUR PERSONAL AI PLANNER</div>
+      <h1>Big goals.<br><span class="gradient-text">Clear next steps.</span></h1>
+      <p class="hero-copy">Tell us where you want to go. Get a roadmap built around your timeline, your starting point, and the time you actually have.</p>
+      <div class="hero-pills">
+        <span>✦ Personalized plans</span><span>↗ Actionable tasks</span><span>◷ Track your progress</span>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="form-panel panel">
+        <div class="panel-heading">
+          <div>
+            <span class="section-kicker">STEP 01</span>
+            <h2>Define your goal</h2>
+          </div>
+          <span class="step-icon">✎</span>
+        </div>
+        <form id="goal-form">
+          <label for="goal">What do you want to achieve?</label>
+          <textarea id="goal" name="goal" maxlength="800" required placeholder="Example: I want to learn full-stack web development and build two projects for my resume in 3 months..."></textarea>
+          <div class="char-row"><span>Be as specific as you can</span><span id="char-count">0 / 800</span></div>
+
+          <label for="level">Your current level</label>
+          <div class="select-wrap">
+            <select id="level" name="level">
+              <option>Beginner</option>
+              <option>Some basics</option>
+              <option>Intermediate</option>
+              <option>Advanced</option>
+            </select>
+            <span>⌄</span>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label for="deadline">Target timeline</label>
+              <div class="select-wrap">
+                <select id="deadline" name="deadline">
+                  <option>2 weeks</option><option>1 month</option><option selected>3 months</option>
+                  <option>6 months</option><option>1 year</option><option>Flexible</option>
+                </select><span>⌄</span>
+              </div>
+            </div>
+            <div>
+              <label for="hours">Hours per week</label>
+              <div class="select-wrap">
+                <select id="hours" name="hours">
+                  <option value="3">3 hours</option><option value="5" selected>5 hours</option>
+                  <option value="7">7 hours</option><option value="10">10 hours</option>
+                  <option value="15">15 hours</option><option value="20">20 hours</option>
+                </select><span>⌄</span>
+              </div>
+            </div>
+          </div>
+
+          <label for="interests">Anything else to consider? <span class="optional">OPTIONAL</span></label>
+          <input id="interests" name="interests" maxlength="400" placeholder="e.g. free resources, college schedule, project-based learning">
+
+          <button class="primary-btn" type="submit" id="generate-btn">
+            <span id="button-text">Build my roadmap</span><span class="btn-arrow">↗</span>
+          </button>
+          <p class="privacy-note"><span>✧</span> Your goal is sent to the AI provider to generate your plan.</p>
+        </form>
+      </aside>
+
+      <section class="results-panel panel" aria-live="polite">
+        <div id="empty-state" class="empty-state">
+          <div class="orbit-illustration">
+            <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+            <div class="orbit-center">↗</div><div class="orbit-node node-a">✦</div>
+            <div class="orbit-node node-b">✓</div><div class="orbit-node node-c">◎</div>
+          </div>
+          <span class="section-kicker">YOUR NEXT CHAPTER</span>
+          <h2>Your roadmap starts here.</h2>
+          <p>Your personalized plan will appear here, broken into phases, practical tasks, and milestones you can actually track.</p>
+          <div class="preview-stats"><div><strong>01</strong><span>Set a goal</span></div><i></i><div><strong>02</strong><span>Get your plan</span></div><i></i><div><strong>03</strong><span>Make progress</span></div></div>
+        </div>
+        <div id="loading-state" class="loading-state hidden">
+          <div class="loader"></div><h2>Designing your roadmap</h2>
+          <p>Breaking your goal into manageable steps...</p>
+          <div class="loading-bars"><span></span><span></span><span></span></div>
+        </div>
+        <div id="error-state" class="error-state hidden">
+          <div class="error-icon">!</div><h2>We couldn't build that yet.</h2><p id="error-message"></p>
+          <button type="button" class="secondary-btn" id="retry-btn">Try again</button>
+        </div>
+        <div id="roadmap-output" class="roadmap-output hidden"></div>
+      </section>
+    </section>
+
+    <footer class="footer">
+      <span>ROADMAPAI <span class="footer-dot">●</span> Built for people who want to grow.</span>
+      <span>AI-generated plans are starting points. Adjust them to fit your life.</span>
+    </footer>
+  </main>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
